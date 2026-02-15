@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Owner Dashboard</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <style>
+    :root {
+      --bg: #080c14;
+      --bg-card: rgba(255, 255, 255, 0.04);
+      --text: #e4e8ed;
+      --muted: #94a3b8;
+      --accent: #00d4aa;
+      --border: rgba(255, 255, 255, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      letter-spacing: -0.01em;
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .refresh {
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text);
+      padding: 0.55rem 0.9rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(150px, 1fr));
+      gap: 0.8rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.4rem;
+    }
+
+    .stat-value {
+      color: var(--accent);
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .panel-title {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .panel-body {
+      max-height: 360px;
+      overflow: auto;
+      padding: 0.75rem 1rem;
+    }
+
+    .countries-list {
+      list-style: none;
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .countries-list li {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.35rem;
+      font-size: 0.9rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 0.55rem 0.35rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      position: sticky;
+      top: 0;
+      background: #0b1220;
+      z-index: 1;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      border: 1px solid var(--border);
+    }
+
+    .badge.new {
+      color: #facc15;
+    }
+
+    .badge.returning {
+      color: var(--accent);
+    }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+    }
+
+    .empty {
+      color: var(--muted);
+      font-size: 0.9rem;
+      padding: 0.5rem 0;
+    }
+
+    @media (max-width: 980px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(140px, 1fr));
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper">
+    <div class="header">
+      <div>
+        <h1>Owner Dashboard</h1>
+        <div class="sub">Private analytics + inbox</div>
+      </div>
+      <button class="refresh" id="refresh-btn">Refresh</button>
+    </div>
+
+    <div class="stats-grid">
+      <div class="card">
+        <div class="stat-label">Total visits</div>
+        <div class="stat-value" id="stat-total">0</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">Unique visitors</div>
+        <div class="stat-value" id="stat-unique">0</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">Returning visits</div>
+        <div class="stat-value" id="stat-returning">0</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">Avg time spent</div>
+        <div class="stat-value" id="stat-avg">0s</div>
+      </div>
+      <div class="card">
+        <div class="stat-label">Visits today</div>
+        <div class="stat-value" id="stat-today">0</div>
+      </div>
+    </div>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Recent visitor sessions</div>
+      </div>
+      <div class="panel-body" id="sessions-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Visitor</th>
+              <th>Type</th>
+              <th>Country</th>
+              <th>Time spent</th>
+              <th>Page</th>
+            </tr>
+          </thead>
+          <tbody id="sessions-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Top countries</div>
+      </div>
+      <div class="panel-body">
+        <ul id="countries-body" class="countries-list"></ul>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title">Contact messages</div>
+      </div>
+      <div class="panel-body" id="messages-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>When</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Message</th>
+            </tr>
+          </thead>
+          <tbody id="messages-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    const slug = pathParts[pathParts.length - 1] || '';
+    let refreshIntervalId = null;
+
+    function formatDuration(seconds) {
+      const total = Number(seconds) || 0;
+      if (total < 60) return `${total}s`;
+      const m = Math.floor(total / 60);
+      const s = total % 60;
+      return `${m}m ${s}s`;
+    }
+
+    function formatDate(value) {
+      if (!value) return '-';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return value;
+      return date.toLocaleString();
+    }
+
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+
+    function isDashboardEmpty(payload) {
+      const stats = payload?.stats || {};
+      const hasStats = Number(stats.totalVisits || 0) > 0 || Number(stats.uniqueVisitors || 0) > 0;
+      const hasMessages = Array.isArray(payload?.messages) && payload.messages.length > 0;
+      const hasSessions = Array.isArray(payload?.recentSessions) && payload.recentSessions.length > 0;
+      return !(hasStats || hasMessages || hasSessions);
+    }
+
+    function mergeDashboardData(liveData, backupData) {
+      const live = liveData && typeof liveData === 'object' ? liveData : {};
+      const backup = backupData && typeof backupData === 'object' ? backupData : {};
+
+      const messageMap = new Map();
+      const messageKey = (row) => `${row?.id || ''}|${row?.email || ''}|${row?.created_at || ''}|${row?.message || ''}`;
+      [...(backup.messages || []), ...(live.messages || [])].forEach((row) => {
+        if (row && typeof row === 'object') messageMap.set(messageKey(row), row);
+      });
+      const messages = Array.from(messageMap.values())
+        .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
+        .slice(0, 200);
+
+      const sessionMap = new Map();
+      const sessionKey = (row) => `${row?.started_at || ''}|${row?.visitor_id_short || ''}|${row?.page || ''}`;
+      [...(backup.recentSessions || []), ...(live.recentSessions || [])].forEach((row) => {
+        if (row && typeof row === 'object') sessionMap.set(sessionKey(row), row);
+      });
+      const recentSessions = Array.from(sessionMap.values())
+        .sort((a, b) => (a.started_at < b.started_at ? 1 : -1))
+        .slice(0, 120);
+
+      const countryCounter = {};
+      recentSessions.forEach((row) => {
+        const country = row.country || 'Unknown';
+        countryCounter[country] = (countryCounter[country] || 0) + 1;
+      });
+      const topCountries = Object.entries(countryCounter)
+        .map(([country, visits]) => ({ country, visits }))
+        .sort((a, b) => b.visits - a.visits)
+        .slice(0, 8);
+
+      const todayKey = new Date().toISOString().slice(0, 10);
+      const mergedTotalVisits = Math.max(
+        Number(live?.stats?.totalVisits || 0),
+        Number(backup?.stats?.totalVisits || 0),
+        recentSessions.length
+      );
+      const mergedReturning = Math.max(
+        Number(live?.stats?.returningVisits || 0),
+        Number(backup?.stats?.returningVisits || 0),
+        recentSessions.filter((row) => row.visitor_type === 'returning').length
+      );
+      const mergedAvg = recentSessions.length
+        ? Math.round(recentSessions.reduce((sum, row) => sum + (Number(row.duration_seconds) || 0), 0) / recentSessions.length)
+        : Math.max(Number(live?.stats?.avgTimeSpentSeconds || 0), Number(backup?.stats?.avgTimeSpentSeconds || 0));
+      const mergedToday = Math.max(
+        Number(live?.stats?.todayVisits || 0),
+        Number(backup?.stats?.todayVisits || 0),
+        recentSessions.filter((row) => (row.started_at || '').slice(0, 10) === todayKey).length
+      );
+
+      const stats = {
+        totalVisits: mergedTotalVisits,
+        uniqueVisitors: Math.max(Number(live?.stats?.uniqueVisitors || 0), Number(backup?.stats?.uniqueVisitors || 0)),
+        returningVisits: mergedReturning,
+        avgTimeSpentSeconds: mergedAvg,
+        todayVisits: mergedToday,
+      };
+
+      return { stats, messages, recentSessions, topCountries };
+    }
+
+    async function loadDashboard() {
+      const response = await fetch(`/api/private/${slug}/dashboard-data?t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          Pragma: 'no-cache',
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Could not load dashboard data');
+      }
+
+      let data = await response.json();
+
+      let backupApplied = false;
+      try {
+        const backupResponse = await fetch(`/data/dashboard-backup.json?t=${Date.now()}`, {
+          cache: 'no-store',
+        });
+        if (backupResponse.ok) {
+          const backupData = await backupResponse.json();
+          if (!isDashboardEmpty(backupData)) {
+            const merged = mergeDashboardData(data, backupData);
+            const hadMore =
+              (merged.messages?.length || 0) > (data.messages?.length || 0) ||
+              (merged.recentSessions?.length || 0) > (data.recentSessions?.length || 0);
+            if (hadMore || isDashboardEmpty(data)) {
+              data = merged;
+              backupApplied = true;
+            }
+          }
+        }
+      } catch {
+      }
+
+      if (backupApplied) {
+        const sub = document.querySelector('.sub');
+        if (sub) {
+          sub.textContent = 'Private analytics + inbox (live + recovered snapshot)';
+        }
+      }
+
+      const stats = data.stats || {};
+
+      setText('stat-total', stats.totalVisits || 0);
+      setText('stat-unique', stats.uniqueVisitors || 0);
+      setText('stat-returning', stats.returningVisits || 0);
+      setText('stat-avg', formatDuration(stats.avgTimeSpentSeconds || 0));
+      setText('stat-today', stats.todayVisits || 0);
+
+      const sessionsBody = document.getElementById('sessions-body');
+      const sessions = data.recentSessions || [];
+      if (!sessions.length) {
+        sessionsBody.innerHTML = `<tr><td colspan="6" class="empty">No sessions yet.</td></tr>`;
+      } else {
+        sessionsBody.innerHTML = sessions.map((row) => `
+          <tr>
+            <td>${formatDate(row.started_at)}</td>
+            <td class="mono">${row.visitor_id_short || '-'}</td>
+            <td><span class="badge ${row.visitor_type === 'returning' ? 'returning' : 'new'}">${row.visitor_type || 'new'}</span></td>
+            <td class="mono">${row.country || 'Unknown'}</td>
+            <td>${formatDuration(row.duration_seconds)}</td>
+            <td class="mono">${row.page || '-'}</td>
+          </tr>
+        `).join('');
+      }
+
+      const countriesBody = document.getElementById('countries-body');
+      const countries = data.topCountries || [];
+      if (!countries.length) {
+        countriesBody.innerHTML = `<li class="empty">No country data yet.</li>`;
+      } else {
+        countriesBody.innerHTML = countries.map((row) => `
+          <li>
+            <span class="mono">${row.country || 'Unknown'}</span>
+            <strong>${row.visits || 0}</strong>
+          </li>
+        `).join('');
+      }
+
+      const messagesBody = document.getElementById('messages-body');
+      const messages = data.messages || [];
+      if (!messages.length) {
+        messagesBody.innerHTML = `<tr><td colspan="4" class="empty">No messages yet.</td></tr>`;
+      } else {
+        messagesBody.innerHTML = messages.map((row) => `
+          <tr>
+            <td>${formatDate(row.created_at)}</td>
+            <td>${row.name || '-'}</td>
+            <td>${row.email || '-'}</td>
+            <td>${(row.message || '').replace(/</g, '&lt;')}</td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    document.getElementById('refresh-btn')?.addEventListener('click', () => {
+      loadDashboard().catch((err) => {
+        console.error(err);
+        alert('Could not refresh dashboard.');
+      });
+    });
+
+    loadDashboard().catch((err) => {
+      console.error(err);
+      alert('Could not load dashboard.');
+    });
+
+    refreshIntervalId = window.setInterval(() => {
+      loadDashboard().catch((err) => {
+        console.error(err);
+      });
+    }, 30000);
+
+    window.addEventListener('beforeunload', () => {
+      if (refreshIntervalId) {
+        window.clearInterval(refreshIntervalId);
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Jassem Younsi - Full Stack Developer & Cybersecurity Student. Spring Boot, Angular, AI/NLP.">
+  <title>Jassem Younsi | Full Stack Developer</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body data-theme="dark">
+
+  <!-- ===== LOADING SCREEN ===== -->
+  <div id="loader" class="loader">
+    <canvas id="loader-canvas" class="loader-canvas"></canvas>
+    <div class="loader-scan"></div>
+    <div class="loader-center">
+      <svg class="loader-svg" viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <text class="loader-letter" x="8" y="48" font-family="'Syne', sans-serif" font-weight="800" font-size="56" letter-spacing="-2">J</text>
+        <text class="loader-letter loader-letter-2" x="48" y="48" font-family="'Syne', sans-serif" font-weight="800" font-size="56" letter-spacing="-2">Y</text>
+      </svg>
+      <div class="loader-glow"></div>
+    </div>
+    <div class="loader-terminal" id="loader-terminal"></div>
+    <div class="loader-bar-track">
+      <div class="loader-bar" id="loader-bar"></div>
+    </div>
+  </div>
+
+  <div class="scroll-progress" role="progressbar" aria-label="Scroll progress"></div>
+  <div class="noise-overlay"></div>
+  <div class="gradient-orb gradient-orb-1"></div>
+  <div class="gradient-orb gradient-orb-2"></div>
+  <div class="gradient-orb gradient-orb-3"></div>
+
+  <nav class="nav">
+    <a href="#" class="nav-logo">JY</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#now">Now</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button type="button" id="lang-toggle" class="lang-toggle" aria-label="Switch language" title="Passer en français">LANG EN</button>
+    <a href="CV.pdf" class="nav-cta" target="_blank" download="Jassem-Younsi-CV.pdf">Resume</a>
+    <button class="nav-toggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <main>
+    <section class="hero" id="hero">
+      <div class="hero-content">
+        <div class="hero-badge" data-delay="0">Full Stack Developer · HITsolutions</div>
+        <h1 class="hero-title" data-delay="100">
+          <span class="hero-line">Building</span>
+          <span class="hero-line hero-line-accent">
+            <span id="typed-text"></span><span class="cursor">|</span>
+          </span>
+          <span class="hero-line">solutions</span>
+        </h1>
+        <p class="hero-desc" data-delay="200">
+          Spring Boot & Angular developer · AI/NLP enthusiast · Cybersecurity Master's student
+        </p>
+        <div class="hero-actions" data-delay="300">
+          <a href="#projects" class="btn btn-primary">View work</a>
+          <a href="#contact" class="btn btn-ghost">Get in touch</a>
+        </div>
+      </div>
+
+      <div class="hero-visual reveal" data-delay="400">
+        <div class="code-window">
+          <div class="window-header">
+            <div class="window-dots">
+              <div class="dot"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+            </div>
+            <span class="window-title">security-monitor.sh</span>
+          </div>
+          <div class="window-body">
+            <div class="line-numbers" id="line-numbers">1
+2
+3
+4
+5
+6
+7</div>
+            <div class="editor-wrap">
+              <div class="code-highlight" id="code-highlight" aria-hidden="true"></div>
+              <textarea class="code-input" id="code-input" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off">const target = 'Full Stack';
+await security.audit('HITsolutions');
+// Scanning for opportunities...
+if (skills.includes('NLP')) {
+  deploy.agent('Jassem');
+}</textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section about" id="about">
+      <div class="section-inner">
+        <span class="section-label">About</span>
+        <div class="about-grid">
+          <div class="about-content">
+            <h2>Jassem Younsi</h2>
+            <p>I'm a full stack developer at <strong>HITsolutions</strong>, specializing in Spring Boot and Angular. I
+              hold a degree in Business Information Systems from ISG Tunis and I'm pursuing a <strong>Master's in
+                Cybersecurity</strong>.</p>
+            <p>I've built intelligent chatbot agents with NLP & LLMs, conference management systems, and startup
+              platforms. I focus on clean architecture, security-first design, and delivering real impact.</p>
+            <p class="about-location"><svg class="location-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="1.5" width="16" height="16">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg> Tunis, Tunisia</p>
+          </div>
+          <div class="about-visual">
+            <div class="about-card">
+              <span class="about-stat">2+</span>
+              <span>Years building</span>
+            </div>
+            <div class="about-card">
+              <span class="about-stat">∞</span>
+              <span>Lines of code</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="marquee-wrap">
+      <div class="marquee">
+        <span>Spring
+          Boot</span><span>·</span><span>Angular</span><span>·</span><span>NLP</span><span>·</span><span>Java</span><span>·</span><span>TypeScript</span><span>·</span><span>PostgreSQL</span><span>·</span><span>Docker</span><span>·</span><span>Cybersecurity</span><span>·</span>
+        <span>Spring
+          Boot</span><span>·</span><span>Angular</span><span>·</span><span>NLP</span><span>·</span><span>Java</span><span>·</span><span>TypeScript</span><span>·</span><span>PostgreSQL</span><span>·</span><span>Docker</span><span>·</span><span>Cybersecurity</span><span>·</span>
+      </div>
+    </section>
+
+    <section class="section now-section" id="now">
+      <div class="section-inner">
+        <span class="section-label">Now</span>
+        <h2 class="section-title">What I'm up to</h2>
+        <div class="now-grid">
+          <div class="now-card">
+            <span class="now-dot"></span>
+            <p>Full stack development at <strong>HITsolutions</strong> — Spring Boot & Angular</p>
+          </div>
+          <div class="now-card">
+            <span class="now-dot"></span>
+            <p>Pursuing my <strong>Master's in Cybersecurity</strong></p>
+          </div>
+          <div class="now-card">
+            <span class="now-dot"></span>
+            <p>Exploring penetration testing & secure coding practices</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section skills" id="skills">
+      <div class="section-inner">
+        <span class="section-label">Skills</span>
+        <h2 class="section-title">Tech stack & tools</h2>
+        <div class="skills-grid">
+          <div class="skill-group">
+            <h3>Backend</h3>
+            <div class="skill-tags">
+              <span>Java</span><span>Spring Boot</span><span>REST API</span><span>PostgreSQL</span><span>MySQL</span>
+            </div>
+          </div>
+          <div class="skill-group">
+            <h3>Frontend</h3>
+            <div class="skill-tags">
+              <span>Angular</span><span>TypeScript</span><span>HTML/CSS</span><span>JavaScript</span>
+            </div>
+          </div>
+          <div class="skill-group">
+            <h3>AI & Data</h3>
+            <div class="skill-tags">
+              <span>NLP</span><span>LLMs</span><span>Machine Learning</span><span>Python</span>
+            </div>
+          </div>
+          <div class="skill-group">
+            <h3>Security & DevOps</h3>
+            <div class="skill-tags">
+              <span>JWT</span><span>OWASP</span><span>Docker</span><span>Git</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section experience" id="experience">
+      <div class="section-inner">
+        <span class="section-label">Experience</span>
+        <h2 class="section-title">Experience & Leadership</h2>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <span class="timeline-date">Aug 2025 – Present</span>
+              <h3>Full Stack Developer</h3>
+              <p class="timeline-company">HITsolutions · Tunis</p>
+              <p>Building scalable web apps with Spring Boot and Angular. RESTful APIs, agile sprints, startup
+                environment.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <span class="timeline-date">Feb – May 2025</span>
+              <h3>Software Developer Intern</h3>
+              <p class="timeline-company">HITsolutions · Tunis</p>
+              <p>Developed an intelligent NLP chatbot for conversational database access. Intent detection, LLM
+                integration, query execution.</p>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <span class="timeline-date">2024 – Present</span>
+              <h3>SMA Junior Entreprise — IT Consultant</h3>
+              <p class="timeline-company">ISG Tunis · Student Association</p>
+              <p>Junior IT Consultant and International Cell member (2024–2025), now Senior IT Consultant
+                (2025–2026). Selected as chef de projet for specific projects and developed an AI recommendation
+                system for the ISG job fair.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section projects" id="projects">
+      <div class="section-inner">
+        <span class="section-label">Projects</span>
+        <h2 class="section-title">Selected work</h2>
+        <div class="projects-grid">
+          <article class="project-card" data-project="nlp">
+            <div class="project-visual">
+              <svg class="project-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+            </div>
+            <div class="project-body">
+              <h3>NLP Chatbot Agent</h3>
+              <p>Intelligent chatbot for natural language database queries. Intent detection, LLM integration, project
+                management.</p>
+              <div class="project-tags">NLP · LLM · Spring · Python</div>
+              <button class="project-expand" aria-label="View details">View details</button>
+            </div>
+          </article>
+          <article class="project-card" data-project="conference">
+            <div class="project-visual">
+              <svg class="project-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+            </div>
+            <div class="project-body">
+              <h3>Conference Management</h3>
+              <p>Java-based system with scheduling, registration, article submission, role-based auth.</p>
+              <div class="project-tags">Java · JavaFX · MySQL · MVC</div>
+              <button class="project-expand" aria-label="View details">View details</button>
+            </div>
+          </article>
+          <article class="project-card" data-project="iot">
+            <div class="project-visual">
+              <svg class="project-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="4" y="2" width="16" height="20" rx="2" ry="2" />
+                <path d="M9 22v-4h6v4" />
+                <path d="M8 6h.01" />
+                <path d="M16 6h.01" />
+                <path d="M12 6h.01" />
+                <path d="M12 10h.01" />
+                <path d="M12 14h.01" />
+                <path d="M16 10h.01" />
+                <path d="M16 14h.01" />
+                <path d="M8 10h.01" />
+                <path d="M8 14h.01" />
+              </svg>
+            </div>
+            <div class="project-body">
+              <h3>Smart Office IoT</h3>
+              <p>IoT system with RFID access, fire detection, automated devices. Cisco Packet Tracer.</p>
+              <div class="project-tags">IoT · Cisco · Simulation</div>
+              <button class="project-expand" aria-label="View details">View details</button>
+            </div>
+          </article>
+          <article class="project-card" data-project="investhub">
+            <div class="project-visual">
+              <svg class="project-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
+                <path
+                  d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
+                <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
+                <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
+              </svg>
+            </div>
+            <div class="project-body">
+              <h3>InvestHub</h3>
+              <p>Platform connecting startups with investors. Profiles, projects, funding tracking.</p>
+              <div class="project-tags">PHP · Bootstrap · MySQL</div>
+              <button class="project-expand" aria-label="View details">View details</button>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section contact" id="contact">
+      <div class="section-inner contact-inner">
+        <div class="contact-content">
+          <span class="section-label">Contact</span>
+          <h2 class="section-title">Let's connect</h2>
+          <p class="contact-intro">Open to opportunities in full stack development, AI/NLP, and cybersecurity. Drop a
+            message—I'd love to connect.</p>
+          <div class="contact-links">
+            <button type="button" class="contact-link contact-copy" data-copy="jassemyounsi01@gmail.com">
+              <span class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                  width="18" height="18">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                  <polyline points="22,6 12,13 2,6" />
+                </svg></span>
+              <span>jassemyounsi01@gmail.com</span>
+              <span class="copy-hint">Click to copy</span>
+            </button>
+            <a href="https://linkedin.com/in/jassem-younsi-11b685258" target="_blank" rel="noopener"
+              class="contact-link">
+              <span class="contact-icon">in</span> LinkedIn
+            </a>
+            <button type="button" class="contact-link contact-copy" data-copy="+21693000672">
+              <span class="contact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                  width="18" height="18">
+                  <path
+                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                </svg></span>
+              <span>+216 93 000 672</span>
+              <span class="copy-hint">Click to copy</span>
+            </button>
+          </div>
+        </div>
+        <div class="contact-visual">
+          <div class="contact-terminal-wrapper">
+            <div class="contact-terminal">
+              <div class="contact-terminal-header">
+                <div class="terminal-controls">
+                  <div class="control"></div>
+                  <div class="control"></div>
+                  <div class="control"></div>
+                </div>
+                <div class="terminal-title">guest@portfolio:~/messages</div>
+              </div>
+              <div class="contact-terminal-body">
+                <div class="terminal-row">
+                  <span class="terminal-prompt">➜</span>
+                  <span class="terminal-path">~</span>
+                  <span class="terminal-cmd">./send-message --secure</span>
+                </div>
+                <form id="contact-form">
+                  <div class="terminal-input-line">
+                    <span>Name:</span>
+                    <input type="text" name="name" class="terminal-input" placeholder="Enter identity..." required>
+                  </div>
+                  <div class="terminal-input-line">
+                    <span>Email:</span>
+                    <input type="email" name="email" class="terminal-input" placeholder="Enter return address..."
+                      required>
+                  </div>
+                  <div class="terminal-input-line terminal-textarea-wrapper"
+                    style="height: auto; align-items: flex-start; padding-top: 8px;">
+                    <textarea name="message" class="terminal-input terminal-textarea" placeholder="> Type payload..."
+                      required></textarea>
+                  </div>
+                  <button type="submit" class="terminal-btn">EXECUTE_TRANSMISSION</button>
+                </form>
+                <div class="terminal-response" id="form-response">
+                  > Packet transmitted successfully.
+                </div>
+                <div class="terminal-response terminal-error" id="form-error">
+                  > Transmission failed. Try again.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>© 2025 Jassem Younsi · Built with care</p>
+    <button type="button" class="footer-shortcuts"
+      onclick="document.getElementById('shortcuts-modal')?.classList.add('open'); document.body.style.overflow='hidden'">Press
+      <kbd>?</kbd> for shortcuts</button>
+  </footer>
+
+  <button class="theme-toggle" aria-label="Toggle theme" title="Toggle dark/light mode">
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <circle cx="12" cy="12" r="4" />
+      <path
+        d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+    </svg>
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </svg>
+  </button>
+  <button class="back-to-top" aria-label="Back to top" title="Back to top">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+      <path d="M18 15l-6-6-6 6" />
+    </svg>
+  </button>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <div id="shortcuts-modal" class="shortcuts-modal" role="dialog" aria-label="Keyboard shortcuts">
+    <div class="shortcuts-content">
+      <h3>Keyboard shortcuts</h3>
+      <ul>
+        <li><kbd>?</kbd> Toggle this help</li>
+        <li><kbd>Esc</kbd> Close modals</li>
+        <li><kbd>1</kbd>–<kbd>5</kbd> Jump to section</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="project-modal" class="project-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="project-modal-inner">
+      <button class="modal-close" aria-label="Close">&times;</button>
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="JY">
+  <defs>
+    <linearGradient id="jy" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#00d4aa"/>
+      <stop offset="100%" stop-color="#00a6ff"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="#0b1220"/>
+  <text x="16" y="46" font-family="Syne, Inter, Segoe UI, Arial, sans-serif" font-size="34" font-weight="800" fill="url(#jy)">JY</text>
+</svg>
