@@ -6,6 +6,8 @@ const ANALYTICS_PATH = 'portfolio-analytics.json';
 const LEGACY_STATE_PATH = 'portfolio-state.json';
 const MESSAGE_ITEM_PREFIX = 'portfolio-messages/';
 const MAX_MESSAGES = 5000;
+const MAX_ANALYTICS_SESSIONS = 5000;
+const MAX_ANALYTICS_VISITORS = 5000;
 
 function defaultMessagesState() {
   return {
@@ -172,8 +174,16 @@ async function readRecentMessages(limit = 200) {
   }
 }
 
-function hasGistMessageStorage() {
+function hasGistStorage() {
   return Boolean(process.env.GITHUB_GIST_ID && process.env.GITHUB_TOKEN);
+}
+
+function hasGistMessageStorage() {
+  return hasGistStorage();
+}
+
+function hasGistAnalyticsStorage() {
+  return hasGistStorage();
 }
 
 async function readGistFile(gistId, token, fileName) {
@@ -210,9 +220,7 @@ async function readMessagesFromGist() {
   if (!gistId || !token) return [];
 
   try {
-    const content = await readGistFile(gistId, token, fileName);
-    if (!content) return [];
-    const parsed = JSON.parse(content);
+    const parsed = await readJsonFromGist(fileName);
     if (!parsed || typeof parsed !== 'object') return [];
     return Array.isArray(parsed.messages) ? parsed.messages : [];
   } catch {
@@ -221,17 +229,39 @@ async function readMessagesFromGist() {
 }
 
 async function writeMessagesToGist(messages) {
-  const gistId = process.env.GITHUB_GIST_ID;
-  const token = process.env.GITHUB_TOKEN;
   const fileName = process.env.GITHUB_GIST_MESSAGES_FILE || 'messages.json';
-  if (!gistId || !token) {
-    throw new Error('Gist storage is not configured');
-  }
 
   const payload = {
     messages: Array.isArray(messages) ? messages : [],
     updatedAt: nowIso(),
   };
+
+  await writeJsonToGist(fileName, payload);
+}
+
+async function readJsonFromGist(fileName) {
+  const gistId = process.env.GITHUB_GIST_ID;
+  const token = process.env.GITHUB_TOKEN;
+  if (!gistId || !token) {
+    throw new Error('Gist storage is not configured');
+  }
+
+  const content = await readGistFile(gistId, token, fileName);
+  if (!content) return null;
+
+  try {
+    return JSON.parse(content);
+  } catch {
+    return null;
+  }
+}
+
+async function writeJsonToGist(fileName, payload) {
+  const gistId = process.env.GITHUB_GIST_ID;
+  const token = process.env.GITHUB_TOKEN;
+  if (!gistId || !token) {
+    throw new Error('Gist storage is not configured');
+  }
 
   const response = await fetch(`https://api.github.com/gists/${encodeURIComponent(gistId)}`, {
     method: 'PATCH',
@@ -242,13 +272,7 @@ async function writeMessagesToGist(messages) {
       'Content-Type': 'application/json',
       'User-Agent': 'jassem-portfolio',
     },
-    body: JSON.stringify({
-      files: {
-        [fileName]: {
-          content: JSON.stringify(payload, null, 2),
-        },
-      },
-    }),
+    body: JSON.stringify({ files: { [fileName]: { content: JSON.stringify(payload, null, 2) } } }),
   });
 
   if (!response.ok) {
@@ -256,7 +280,54 @@ async function writeMessagesToGist(messages) {
   }
 }
 
+function pruneAnalyticsState(state) {
+  const safe = {
+    visitors: state?.visitors && typeof state.visitors === 'object' ? state.visitors : {},
+    sessions: state?.sessions && typeof state.sessions === 'object' ? state.sessions : {},
+  };
+
+  const sessionEntries = Object.entries(safe.sessions)
+    .sort((a, b) => {
+      const ta = new Date(a[1]?.started_at || 0).getTime();
+      const tb = new Date(b[1]?.started_at || 0).getTime();
+      return tb - ta;
+    })
+    .slice(0, MAX_ANALYTICS_SESSIONS);
+
+  const trimmedSessions = Object.fromEntries(sessionEntries);
+  const visitorIdsInSessions = new Set(sessionEntries.map(([, s]) => s?.visitor_id).filter(Boolean));
+
+  const visitorEntries = Object.entries(safe.visitors)
+    .sort((a, b) => {
+      const ta = new Date(a[1]?.last_seen || 0).getTime();
+      const tb = new Date(b[1]?.last_seen || 0).getTime();
+      return tb - ta;
+    });
+
+  const pinned = visitorEntries.filter(([id]) => visitorIdsInSessions.has(id));
+  const remainder = visitorEntries.filter(([id]) => !visitorIdsInSessions.has(id));
+
+  const trimmedVisitors = Object.fromEntries(
+    [...pinned, ...remainder].slice(0, MAX_ANALYTICS_VISITORS)
+  );
+
+  return {
+    visitors: trimmedVisitors,
+    sessions: trimmedSessions,
+  };
+}
+
 async function readAnalyticsState() {
+  if (hasGistAnalyticsStorage()) {
+    const fileName = process.env.GITHUB_GIST_ANALYTICS_FILE || 'analytics.json';
+    const data = await readJsonFromGist(fileName).catch(() => null);
+    if (!data || typeof data !== 'object') return defaultAnalyticsState();
+    return {
+      visitors: data.visitors && typeof data.visitors === 'object' ? data.visitors : {},
+      sessions: data.sessions && typeof data.sessions === 'object' ? data.sessions : {},
+    };
+  }
+
   const data = await readBlobJson(ANALYTICS_PATH);
   if (!data || typeof data !== 'object') {
     const legacy = await readBlobJson(LEGACY_STATE_PATH);
@@ -273,10 +344,17 @@ async function readAnalyticsState() {
 }
 
 async function writeAnalyticsState(state) {
-  const safeState = {
-    visitors: state?.visitors && typeof state.visitors === 'object' ? state.visitors : {},
-    sessions: state?.sessions && typeof state.sessions === 'object' ? state.sessions : {},
-  };
+  const safeState = pruneAnalyticsState(state);
+
+  if (hasGistAnalyticsStorage()) {
+    const fileName = process.env.GITHUB_GIST_ANALYTICS_FILE || 'analytics.json';
+    await writeJsonToGist(fileName, {
+      ...safeState,
+      updatedAt: nowIso(),
+    });
+    return;
+  }
+
   await writeBlobJson(ANALYTICS_PATH, safeState);
 }
 
