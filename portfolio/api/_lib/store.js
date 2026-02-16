@@ -1,4 +1,5 @@
 const { list, put } = require('@vercel/blob');
+const { Pool } = require('pg');
 const crypto = require('crypto');
 
 const MESSAGES_PATH = 'portfolio-messages.json';
@@ -8,6 +9,9 @@ const MESSAGE_ITEM_PREFIX = 'portfolio-messages/';
 const MAX_MESSAGES = 5000;
 const MAX_ANALYTICS_SESSIONS = 5000;
 const MAX_ANALYTICS_VISITORS = 5000;
+
+let pgPool;
+let pgInitPromise;
 
 function defaultMessagesState() {
   return {
@@ -20,6 +24,62 @@ function defaultAnalyticsState() {
     visitors: {},
     sessions: {},
   };
+}
+
+function hasPostgresStorage() {
+  return Boolean(process.env.DATABASE_URL);
+}
+
+function getPgPool() {
+  if (!pgPool) {
+    pgPool = new Pool({
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
+      max: 3,
+    });
+  }
+  return pgPool;
+}
+
+async function ensurePgSchema() {
+  if (!hasPostgresStorage()) return;
+  if (!pgInitPromise) {
+    pgInitPromise = (async () => {
+      const pool = getPgPool();
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS messages (
+          id TEXT PRIMARY KEY,
+          name TEXT NOT NULL,
+          email TEXT NOT NULL,
+          message TEXT NOT NULL,
+          created_at TIMESTAMPTZ NOT NULL
+        );
+      `);
+
+      await pool.query(`
+        CREATE INDEX IF NOT EXISTS messages_created_at_idx
+        ON messages (created_at DESC);
+      `);
+
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS app_state (
+          key TEXT PRIMARY KEY,
+          value JSONB NOT NULL,
+          updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        );
+      `);
+
+      await pool.query(
+        `
+          INSERT INTO app_state (key, value)
+          VALUES ('analytics', $1::jsonb)
+          ON CONFLICT (key) DO NOTHING;
+        `,
+        [JSON.stringify(defaultAnalyticsState())]
+      );
+    })();
+  }
+  await pgInitPromise;
 }
 
 async function readBlobJson(pathname) {
@@ -94,6 +154,19 @@ async function appendMessage(row) {
     throw new Error('Invalid message row');
   }
 
+  if (hasPostgresStorage()) {
+    await ensurePgSchema();
+    const pool = getPgPool();
+    await pool.query(
+      `
+        INSERT INTO messages (id, name, email, message, created_at)
+        VALUES ($1, $2, $3, $4, $5::timestamptz)
+      `,
+      [safe.id, safe.name, safe.email, safe.message, safe.created_at]
+    );
+    return;
+  }
+
   if (hasGistMessageStorage()) {
     const messages = await readMessagesFromGist();
     messages.unshift(safe);
@@ -108,6 +181,35 @@ async function appendMessage(row) {
 }
 
 async function readRecentMessages(limit = 200) {
+  if (hasPostgresStorage()) {
+    await ensurePgSchema();
+    const pool = getPgPool();
+    const queryLimit = Math.max(1, Math.min(1000, Number(limit) || 200));
+    const { rows } = await pool.query(
+      `
+        SELECT id, name, email, message, created_at
+        FROM messages
+        ORDER BY created_at DESC
+        LIMIT $1
+      `,
+      [queryLimit]
+    );
+
+    return rows
+      .map((row) => ({
+        id: row.id,
+        name: row.name,
+        email: row.email,
+        message: row.message,
+        created_at:
+          typeof row.created_at === 'string'
+            ? row.created_at
+            : new Date(row.created_at).toISOString(),
+      }))
+      .map((row) => sanitizeMessageRow(row))
+      .filter(Boolean);
+  }
+
   if (hasGistMessageStorage()) {
     const messages = await readMessagesFromGist();
     return messages
@@ -318,6 +420,20 @@ function pruneAnalyticsState(state) {
 }
 
 async function readAnalyticsState() {
+  if (hasPostgresStorage()) {
+    await ensurePgSchema();
+    const pool = getPgPool();
+    const { rows } = await pool.query(
+      `SELECT value FROM app_state WHERE key = 'analytics' LIMIT 1`
+    );
+    const data = rows[0]?.value;
+    if (!data || typeof data !== 'object') return defaultAnalyticsState();
+    return {
+      visitors: data.visitors && typeof data.visitors === 'object' ? data.visitors : {},
+      sessions: data.sessions && typeof data.sessions === 'object' ? data.sessions : {},
+    };
+  }
+
   if (hasGistAnalyticsStorage()) {
     const fileName = process.env.GITHUB_GIST_ANALYTICS_FILE || 'analytics.json';
     const data = await readJsonFromGist(fileName).catch(() => null);
@@ -345,6 +461,21 @@ async function readAnalyticsState() {
 
 async function writeAnalyticsState(state) {
   const safeState = pruneAnalyticsState(state);
+
+  if (hasPostgresStorage()) {
+    await ensurePgSchema();
+    const pool = getPgPool();
+    await pool.query(
+      `
+        INSERT INTO app_state (key, value, updated_at)
+        VALUES ('analytics', $1::jsonb, NOW())
+        ON CONFLICT (key)
+        DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()
+      `,
+      [JSON.stringify(safeState)]
+    );
+    return;
+  }
 
   if (hasGistAnalyticsStorage()) {
     const fileName = process.env.GITHUB_GIST_ANALYTICS_FILE || 'analytics.json';

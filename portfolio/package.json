@@ -1,0 +1,9 @@
+{
+  "name": "jassem-portfolio-vercel",
+  "private": true,
+  "version": "1.0.0",
+  "dependencies": {
+    "@vercel/blob": "^0.27.0",
+    "pg": "^8.13.1"
+  }
+}
