@@ -1,0 +1,15 @@
+{
+  "name": "jassem-portfolio",
+  "version": "1.0.0",
+  "description": "Jassem Younsi portfolio with message storage",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "express": "^4.21.0",
+    "geoip-lite": "^1.4.10"
+  }
+}
